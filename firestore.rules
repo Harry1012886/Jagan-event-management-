@@ -1,0 +1,84 @@
+rules_version = '2';
+
+// Security rules for the Event Manager dashboard.
+//
+// Publish these in Firebase console > Firestore Database > Rules, or with
+//   firebase deploy --only firestore:rules
+//
+// The rule is simple and strict: you must be signed in, and you can only touch
+// documents stamped with your own uid. Hiding buttons in the UI is not security;
+// this is what actually stops anyone else reading your business data.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Every business record carries an ownerUid written by the app.
+    function ownsExisting() {
+      return signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    function ownsIncoming() {
+      return signedIn() && request.resource.data.ownerUid == request.auth.uid;
+    }
+
+    // Money must never be negative.
+    function validAmounts() {
+      return (!('amount' in request.resource.data) || request.resource.data.amount >= 0)
+        && (!('totalAmount' in request.resource.data) || request.resource.data.totalAmount >= 0)
+        && (!('advanceRequired' in request.resource.data) || request.resource.data.advanceRequired >= 0)
+        && (!('agreedPayment' in request.resource.data) || request.resource.data.agreedPayment >= 0)
+        && (!('paidAmount' in request.resource.data) || request.resource.data.paidAmount >= 0);
+    }
+
+    // Only the fixed choices the UI offers, so a stray write cannot invent a
+    // payment method that no filter or badge knows how to display.
+    function validChoices() {
+      return (!('method' in request.resource.data)
+          || request.resource.data.method in ['Cash', 'UPI', 'Bank Transfer', ''])
+        && (!('paymentMethod' in request.resource.data)
+          || request.resource.data.paymentMethod in ['Cash', 'UPI', 'Bank Transfer', ''])
+        && (!('status' in request.resource.data)
+          || request.resource.data.status is string)
+        && (!('paymentStatus' in request.resource.data)
+          || request.resource.data.paymentStatus in ['Pending', 'Paid']);
+    }
+
+    // Named explicitly, so a stray write cannot create some other collection.
+    function isBusinessCollection(name) {
+      return name in [
+        'clients',
+        'events',
+        'payments',
+        'crewAssignments',
+        'footageUploads',
+        'notifications'
+      ];
+    }
+
+    // One profile document per account, keyed by uid. A signed-in owner may read
+    // and write only their own, and cannot reach anyone else's.
+    match /users/{userId} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.ownerUid == request.auth.uid;
+    }
+
+    // Business data: clients, events, payments, crewAssignments,
+    // footageUploads and notifications.
+    match /{collection}/{docId} {
+      allow read: if isBusinessCollection(collection) && ownsExisting();
+      allow create: if isBusinessCollection(collection)
+        && ownsIncoming() && validAmounts() && validChoices();
+      allow update: if isBusinessCollection(collection)
+        && ownsExisting() && ownsIncoming() && validAmounts() && validChoices();
+      allow delete: if isBusinessCollection(collection) && ownsExisting();
+    }
+
+    // Anything not matched above stays closed.
+  }
+}

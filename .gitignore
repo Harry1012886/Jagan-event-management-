@@ -1,0 +1,35 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# Never commit real keys
+.env
+.env.local
+.env.*.local
+
+# Firebase CLI
+.firebase
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

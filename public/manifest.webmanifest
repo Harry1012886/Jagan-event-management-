@@ -1,0 +1,19 @@
+{
+  "name": "Event Manager — Photography & Video",
+  "short_name": "Event Manager",
+  "description": "Track photography bookings, client payments, crew payments and footage uploads.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f5fb",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
