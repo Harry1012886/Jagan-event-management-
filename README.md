@@ -1,142 +1,202 @@
 # Event Manager — Photography & Video
 
-A private dashboard for a photography/videography business. One booking is entered once, and
-payments, crew and footage all hang off it.
+A private dashboard for a photography and videography business. You enter a booking once.
+Payments, crew and footage all hang off that event.
 
-- **Events** — date, time, event type, location (India state → district), venue, notes
-- **Client payments** — total, advance, instalments, running balance, payment status
-- **Crew** — who shot the event, their fee, and whether they have been paid
-- **Footage** — per-crew upload status (pending / uploading / uploaded / verified)
-- **Calendar** — month view with year and month dropdowns
-- **Reminders** — pushed to Google Calendar, which then emails and notifies your phone
+**Live website:** https://jagan-event-management.web.app  
+**Source code:** https://github.com/Harry1012886/Jagan-event-management-  
+**Firebase project:** `jagan-event-management` (Spark / free plan)
 
-Works on phone and desktop from the same URL. On desktop you get a sidebar and tables; on
-mobile you get a bottom nav and stacked cards.
+Sign in with Google using `harryhermione2910@gmail.com` or `saranyakumaravel2903@gmail.com`.
+Both accounts are Owners of the Firebase project. Data you save is tied to **the Google
+account you used to sign in**, so use the same account on your phone and your laptop.
 
-## Setting up Firebase
+---
 
-Firebase is required — the app has no local-only mode, because the whole point is that a
-booking added on your phone is on your laptop a moment later. Everything below fits inside the
-free Spark plan, no card needed.
+## Do I need to pay money?
 
-1. Create a project at [console.firebase.google.com](https://console.firebase.google.com).
-2. **Build → Authentication → Sign-in method** — enable **Google**.
-3. **Build → Firestore Database** — create a database.
-4. **Project settings → Your apps → Web app** — register an app and copy the config values.
-5. Copy `.env.example` to `.env` and paste those values in.
+**No — not for normal use of this dashboard.** The project is on Firebase **Spark**, which is
+the free plan. Google does not ask for a card for Spark.
 
-Then publish the security rules so only your own account can read or write your data:
+What stays free for this kind of app:
 
-```bash
-npm install -g firebase-tools
-firebase login
-firebase deploy --only firestore:rules,firestore:indexes
-```
+| What you use | Cost for this business |
+| --- | --- |
+| Website hosting | Free |
+| Google sign-in | Free |
+| Saving events, payments, clients, crew, footage status | Free (Cloud Firestore, generous free quota) |
+| Using the site on phone and laptop | Free |
+| Google Calendar reminders (optional, if you connect them later) | Free |
 
-`firestore.rules` restricts every document to the account that created it, so signing in with a
-different Google account shows an empty dashboard rather than your records.
+You would only start paying if you **upgrade to Blaze** (pay-as-you-go). You do **not** need
+Blaze for this app. Spark is enough.
 
-If the keys are missing the app says so on screen and lists exactly which ones, rather than
-failing somewhere deeper.
+Things that are *not* stored in this website, and are not billed through Firebase:
 
-## Running it locally
+- Photo and video files — they stay in **Google Drive**. This app only stores the Drive **link**
+  and whether footage is pending / uploaded / verified.
+- Google Drive space — that is your Google account’s Drive quota, same as always.
+
+**Do not turn on Cloud Functions or Identity Platform “upgrade” banners** unless you know you
+want a paid feature. SMS multi-factor login, for example, needs a paid upgrade. You do not need
+it.
+
+---
+
+## Where is the data saved?
+
+Everything you type in the dashboard (events, clients, payments, crew, footage status) is saved
+in **Google Cloud Firestore**, inside the Firebase project `jagan-event-management`.
+
+It is **not** saved only in the phone browser. That is why a booking added on the laptop shows
+up on the phone after you refresh or wait a second.
+
+Each record is stamped with your account id (`ownerUid`). Security rules allow only the signed-in
+owner to read or write their own rows. If you sign in with a *different* Google account, you will
+see an empty dashboard — that is by design, not a data loss.
+
+### What is stored in each collection
+
+| Collection | What it holds |
+| --- | --- |
+| `users` | Profile for each signed-in account |
+| `clients` | Name, phone, email, notes |
+| `events` | Date, time, type, India state/district, venue, amounts, shoot status |
+| `payments` | Amount, type (Advance / Partial / Final), Cash / UPI / Bank Transfer, paid or pending, date, optional reference number |
+| `crewAssignments` | Crew name, role, agreed fee, payment method, amount, paid/pending, paid date |
+| `footageUploads` | Pending / uploading / uploaded / verified, Google Drive link, verification |
+| `notifications` | In-app reminder / alert records |
+
+Raw wedding films and photo folders are **not** uploaded here. Paste the Drive link on the
+footage screen.
+
+Payment rows store amounts and UPI/bank **reference numbers** only — never card numbers or UPI PINs.
+
+---
+
+## How to see the data
+
+### Inside the website (day-to-day)
+
+Open https://jagan-event-management.web.app and sign in. Then:
+
+- **Dashboard** — upcoming shoots, money still to collect, footage still pending
+- **All Events** — every booking
+- **Payments** — client money and crew money
+- **Crew & Footage** — who shot, who uploaded
+- **Settings → Backup & export** — download a JSON backup, plus CSV files that open in Excel
+  or Google Sheets
+
+### Inside Firebase (the actual database)
+
+1. Open [Firebase console](https://console.firebase.google.com/project/jagan-event-management/overview).
+2. Sign in with an Owner account (`harryhermione2910@gmail.com` or `saranyakumaravel2903@gmail.com`).
+3. Left menu → **Build** → **Firestore Database**.
+4. Open the **Data** tab and click into `events`, `payments`, and the other collections.
+
+That Firestore page is the source of truth. The website is a friendly view of the same records.
+
+To see who can sign in: **Build → Authentication → Users**.
+
+To see the hosted website files: **Build → Hosting**.
+
+---
+
+## How to use the site
+
+1. Open https://jagan-event-management.web.app on phone or computer.
+2. **Continue with Google** and pick one of the Owner accounts. Use that same account everywhere.
+3. **Add Event** — date (year/month calendar), time (clock), location (India map → state →
+   district), amounts.
+4. On the event page, record **client payments** (paid/pending, Cash/UPI/Bank Transfer,
+   optional reference), add **crew**, mark **crew paid**, and set **footage** status + Drive link.
+5. The dashboard totals update from those records. You do not type a separate “total paid”.
+
+Email/password on the login screen only works if you later enable **Email/Password** under
+Authentication → Sign-in method. Google sign-in is enough.
+
+---
+
+## Owners and sharing
+
+| Google account | Role |
+| --- | --- |
+| harryhermione2910@gmail.com | Owner |
+| saranyakumaravel2903@gmail.com | Owner |
+
+Owners can open the Firebase console and change settings. **App data is still per signed-in
+user.** If one person signs in with account A and someone else signs in with account B, they do
+not see each other’s events.
+
+If two people must share **one** diary of jobs, they must both sign in with the **same** Google
+account, or a developer must later change the security rules. Do not change rules unless you
+understand that.
+
+---
+
+## Reminders (Google Calendar) — optional
+
+The dashboard can create Google Calendar events with reminders. Calendar then emails you and
+notifies your phone even when the website is closed. That stays free. Gmail API was not used,
+because automatic emails while the site is closed would need paid Cloud Functions.
+
+This is **not** required for bookings and payments. Leave it until you want it. Setup is in
+**Settings** on the website, and needs a Google Cloud OAuth client ID (`VITE_GOOGLE_CLIENT_ID`)
+plus a rebuild and redeploy.
+
+---
+
+## Backup
+
+In the website: **Settings → Backup & export**.
+
+- JSON — full copy, can be restored from the same page
+- Events CSV and Payments CSV — for Excel / Sheets
+
+Download a backup before you click **Clear all data**. Clearing deletes Firestore records for
+that signed-in account on every device.
+
+---
+
+## If something looks empty
+
+- Signed in with the other Owner Google account? You will not see the first account’s events.
+- Just saved on another device? Wait a second, or refresh.
+- Google sign-in popup blocked? Allow popups for this site.
+- “This web address is not authorised”? Add the site URL under Authentication → Settings →
+  Authorised domains. Hosting (`*.web.app`) is normally already listed.
+
+---
+
+## For developers (local run and redeploy)
 
 ```bash
 npm install
 npm run dev
 ```
 
-Other commands:
-
-```bash
-npm run lint       # ESLint
-npm run build      # production build into dist/
-npm run preview    # serve the production build
-npm run emulators  # local Auth + Firestore, no real project touched
-```
-
-To develop against the emulators instead of your live data, run `npm run emulators` and create
-a `.env.local` holding **all six** Firebase keys plus the emulator flag. Placeholder values are
-fine, the emulator does not check them:
-
-```
-VITE_FIREBASE_API_KEY=demo-api-key
-VITE_FIREBASE_AUTH_DOMAIN=demo-event-manager.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=demo-event-manager
-VITE_FIREBASE_STORAGE_BUCKET=demo-event-manager.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=000000000000
-VITE_FIREBASE_APP_ID=1:000000000000:web:demoemulator
-VITE_FIREBASE_EMULATOR=true
-```
-
-Vite reads `.env.local` **after** `.env`, so while that file exists it wins and your real
-project is left completely alone. Delete it to go back to live data.
-
-The emulator loads `firestore.rules`, so it is also the right place to check that a rule change
-does what you expect before deploying it.
-
-## How the data is stored
-
-| Collection | Holds |
-| --- | --- |
-| `users` | One profile per account, keyed by uid |
-| `clients` | Name, phone, email, notes |
-| `events` | Date, time, type, location, venue, amounts, shoot status |
-| `payments` | Client instalments: amount, type, method, paid/unpaid, date, reference |
-| `crewAssignments` | Crew member, role, agreed fee, and their payment method/amount/status/date |
-| `footageUploads` | Per-crew upload status, Google Drive link, verification |
-
-Every document carries an `ownerUid`, which is what both the queries and the security rules
-filter on. Each collection is watched with a live listener, so changes appear on other devices
-within about a second without a refresh, and edits made with no signal are sent up when the
-connection returns.
-
-## Reminders (Google Calendar)
-
-Google Calendar was chosen over the Gmail API because a reminder has to fire when the website is
-closed. Calendar stores the reminder and sends it for you, by email and as a phone notification,
-at no cost. Gmail would need a scheduled server job, and Firebase charges for those.
-
-1. In [Google Cloud Console](https://console.cloud.google.com), enable the **Google Calendar API**
-   on the same project.
-2. Configure the OAuth consent screen and add your own Google account as a test user.
-3. Create an **OAuth client ID** of type *Web application*, and add your site address to the
-   authorised JavaScript origins.
-4. Put the client ID in `.env` as `VITE_GOOGLE_CLIENT_ID` and rebuild.
-
-Leave `VITE_GOOGLE_CLIENT_ID` blank to keep calendar features switched off; the rest of the app
-works exactly the same.
-
-## Hosting
+Copy `.env.example` to `.env` with the web app keys from
+Firebase → Project settings → Your apps. Never commit `.env`. Never put a service-account
+private key in this project.
 
 ```bash
 npm run build
-firebase deploy --only hosting
+firebase deploy --only hosting,firestore:rules,firestore:indexes
 ```
 
-`firebase.json` already rewrites all routes to `index.html`, which is what a single-page app
-needs so that `/events/new` works on a hard refresh.
+Environment variables are baked in at **build** time. After changing `.env`, build and deploy
+again.
 
-Environment variables are baked in at build time, so `.env` must be present on the machine that
-runs `npm run build`. If you later change a key, rebuild and redeploy.
+Other commands: `npm run lint`, `npm run preview`, `npm run emulators`.
 
-## Notes on the data
+India map shapes live under `public/geo/`. Regenerate with `node scripts/build-geo.mjs` if needed.
 
-- Large photo and video files stay in Google Drive. This app stores the links and the upload
-  status, not the footage itself.
-- Payment records hold amounts and reference numbers only — never card numbers or UPI PINs.
-- The app only uses the Firebase client SDK. No admin credential or service-account private key
-  is stored in it, and none is needed.
-- **Settings → Backup & export** downloads a full JSON backup, plus CSV files of events and
-  payments that open in Excel or Google Sheets.
+---
 
-## Map data
+## What is already set up
 
-The India state and district shapes under `public/geo/` are pre-simplified so they are small
-enough to ship. To regenerate them from the upstream source:
-
-```bash
-node scripts/build-geo.mjs
-```
-
-District shapes load on demand, so only the state you tapped is ever downloaded.
+- React / Vite website on Firebase Hosting
+- Google sign-in (Firebase Authentication)
+- Cloud Firestore + security rules so only the owner of a record can read or write it
+- Live site at https://jagan-event-management.web.app
+- Code on GitHub at https://github.com/Harry1012886/Jagan-event-management-
