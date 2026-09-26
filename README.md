@@ -7,9 +7,12 @@ Payments, crew and footage all hang off that event.
 **Source code:** https://github.com/Harry1012886/Jagan-event-management-  
 **Firebase project:** `jagan-event-management` (Spark / free plan)
 
-Sign in with Google using `harryhermione2910@gmail.com` or `saranyakumaravel2903@gmail.com`.
-Both accounts are Owners of the Firebase project. Data you save is tied to **the Google
-account you used to sign in**, so use the same account on your phone and your laptop.
+Sign in with **`clixionphotography@gmail.com`** (email and password, or Google with that
+same address). Use that account on your phone and your laptop so events stay in one diary.
+
+The Firebase project itself is still `jagan-event-management`. Console owners
+(`harryhermione2910@gmail.com`, `saranyakumaravel2903@gmail.com`) can open Firebase
+settings; they should not be used for day-to-day bookings any more.
 
 ---
 
@@ -105,24 +108,25 @@ To see the hosted website files: **Build → Hosting**.
 ## How to use the site
 
 1. Open https://jagan-event-management.web.app on phone or computer.
-2. **Continue with Google** and pick one of the Owner accounts. Use that same account everywhere.
+2. Sign in as `clixionphotography@gmail.com` (email/password or Google). Use that same account everywhere.
 3. **Add Event** — date (year/month calendar), time (clock), location (India map → state →
    district), amounts.
 4. On the event page, record **client payments** (paid/pending, Cash/UPI/Bank Transfer,
    optional reference), add **crew**, mark **crew paid**, and set **footage** status + Drive link.
 5. The dashboard totals update from those records. You do not type a separate “total paid”.
 
-Email/password on the login screen only works if you later enable **Email/Password** under
-Authentication → Sign-in method. Google sign-in is enough.
+Email/password is enabled for `clixionphotography@gmail.com`. The site works on **iPhone
+(Safari)** and Android. On iPhone: Share → Add to Home Screen.
 
 ---
 
 ## Owners and sharing
 
-| Google account | Role |
+| Account | Role |
 | --- | --- |
-| harryhermione2910@gmail.com | Owner |
-| saranyakumaravel2903@gmail.com | Owner |
+| clixionphotography@gmail.com | App login and Calendar reminders |
+| harryhermione2910@gmail.com | Firebase project owner |
+| saranyakumaravel2903@gmail.com | Firebase project owner |
 
 Owners can open the Firebase console and change settings. **App data is still per signed-in
 user.** If one person signs in with account A and someone else signs in with account B, they do
@@ -134,15 +138,16 @@ understand that.
 
 ---
 
-## Reminders (Google Calendar) — optional
+## Reminders (Google Calendar) — free, no card
 
-The dashboard can create Google Calendar events with reminders. Calendar then emails you and
-notifies your phone even when the website is closed. That stays free. Gmail API was not used,
-because automatic emails while the site is closed would need paid Cloud Functions.
+This website cannot send Gmail by itself while it is closed: that would need a paid Cloud
+Function. Google Calendar does the same job for free: it emails you and notifies your phone.
 
-This is **not** required for bookings and payments. Leave it until you want it. Setup is in
-**Settings** on the website, and needs a Google Cloud OAuth client ID (`VITE_GOOGLE_CLIENT_ID`)
-plus a rebuild and redeploy.
+One-time in Google Cloud (still free, no billing): enable **Google Calendar API** for project
+`jagan-event-management`. Then on the website: **Settings → Connect Google Calendar** (allow
+Calendar in the Google popup) → open an event → **Add to Google Calendar**.
+
+Default reminders are 1 week and 1 day before the shoot, not at the moment you save.
 
 ---
 

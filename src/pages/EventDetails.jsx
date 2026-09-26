@@ -31,10 +31,11 @@ import {
   relativeDay,
 } from '../utils/format'
 import {
+  DEFAULT_REMINDERS,
   createCalendarEvent,
-  isCalendarConfigured,
   updateCalendarEvent,
 } from '../services/calendarService'
+import { useLocalSetting } from '../hooks/useLocalSetting'
 
 export function EventDetails() {
   const { eventId } = useParams()
@@ -50,6 +51,7 @@ export function EventDetails() {
   const [footageDialog, setFootageDialog] = useState(null)
   const [confirm, setConfirm] = useState(null)
   const [busy, setBusy] = useState('')
+  const [reminders] = useLocalSetting('reminders', DEFAULT_REMINDERS)
 
   if (!view) {
     return (
@@ -79,8 +81,8 @@ export function EventDetails() {
     setBusy('calendar')
     try {
       const result = event.calendarEventId
-        ? await updateCalendarEvent(event.calendarEventId, event, client)
-        : await createCalendarEvent(event, client)
+        ? await updateCalendarEvent(event.calendarEventId, event, client, reminders)
+        : await createCalendarEvent(event, client, reminders)
 
       await update('events', event.id, result)
       await create('notifications', {
@@ -613,42 +615,33 @@ export function EventDetails() {
 
           <SectionCard title="Google Calendar" icon="calendar">
             <div className="col gap-12">
-              {!isCalendarConfigured ? (
-                <p className="text-sm text-muted">
-                  Add your Google client ID in <Link to="/settings">Settings</Link> to create
-                  calendar events with automatic reminders.
-                </p>
-              ) : (
-                <>
-                  <p className="text-sm text-muted">
-                    {event.calendarLink
-                      ? 'This event is on your Google Calendar. Reminders arrive by email and phone notification.'
-                      : 'Add this event to Google Calendar and Google will remind you 1 day and 2 hours before.'}
-                  </p>
-                  <div className="row row-wrap gap-8">
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      onClick={syncCalendar}
-                      disabled={busy === 'calendar'}
-                    >
-                      {busy === 'calendar' ? <Spinner /> : <Icon name="calendarPlus" size={15} />}
-                      {event.calendarEventId ? 'Update calendar event' : 'Add to Google Calendar'}
-                    </button>
-                    {event.calendarLink && (
-                      <a
-                        href={event.calendarLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn btn-secondary btn-sm"
-                      >
-                        <Icon name="externalLink" size={15} />
-                        Open
-                      </a>
-                    )}
-                  </div>
-                </>
-              )}
+              <p className="text-sm text-muted">
+                {event.calendarLink
+                  ? 'This event is on your Google Calendar. Google emails you and notifies your phone before the shoot — free, even when this website is closed.'
+                  : 'Add this event to Google Calendar. Google then emails you and notifies your phone 1 week and 1 day before (change times in Settings). Free — no extra payment.'}
+              </p>
+              <div className="row row-wrap gap-8">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={syncCalendar}
+                  disabled={busy === 'calendar'}
+                >
+                  {busy === 'calendar' ? <Spinner /> : <Icon name="calendarPlus" size={15} />}
+                  {event.calendarEventId ? 'Update calendar event' : 'Add to Google Calendar'}
+                </button>
+                {event.calendarLink && (
+                  <a
+                    href={event.calendarLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-secondary btn-sm"
+                  >
+                    <Icon name="externalLink" size={15} />
+                    Open
+                  </a>
+                )}
+              </div>
             </div>
           </SectionCard>
 

@@ -74,7 +74,7 @@ export function CalendarView() {
   }
 
   return (
-    <>
+    <div className="cal-page">
       <PageHeader
         title="Calendar"
         subtitle={`${monthEvents.length} event${monthEvents.length === 1 ? '' : 's'} in ${MONTHS[cursor.month]} ${cursor.year}`}
@@ -86,6 +86,7 @@ export function CalendarView() {
         }
       />
 
+      <div className="cal-board">
       <div className="month-toolbar">
         <div className="month-jump">
           <button
@@ -199,8 +200,9 @@ export function CalendarView() {
           )
         })}
       </div>
+      </div>
 
-      <div style={{ marginTop: 18 }}>
+      <div className="cal-sheet">
         <SectionCard
           title={formatDateLong(selected)}
           icon="calendar"
@@ -229,7 +231,7 @@ export function CalendarView() {
           )}
         </SectionCard>
       </div>
-    </>
+    </div>
   )
 }
 

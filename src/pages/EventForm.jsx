@@ -21,8 +21,15 @@ import {
 import { useToast } from '../components/ui/Toast'
 import { useData } from '../data/store'
 import { useEventActions } from '../hooks/useEvents'
+import { useLocalSetting } from '../hooks/useLocalSetting'
 import { CURRENCY } from '../data/constants'
 import { formatMoney, toAmount, todayISO } from '../utils/format'
+import {
+  DEFAULT_REMINDERS,
+  createCalendarEvent,
+  isCalendarConnected,
+  updateCalendarEvent,
+} from '../services/calendarService'
 
 const BLANK_CREW = { memberName: '', role: 'Photographer', agreedPayment: '' }
 
@@ -92,6 +99,7 @@ export function EventForm() {
   const [crew, setCrew] = useState([])
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
+  const [reminders] = useLocalSetting('reminders', DEFAULT_REMINDERS)
 
   const clients = useMemo(
     () => [...db.clients].sort((a, b) => String(a.name).localeCompare(String(b.name))),
@@ -105,6 +113,31 @@ export function EventForm() {
   function set(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }))
     setErrors((prev) => ({ ...prev, [key]: undefined }))
+  }
+
+  async function syncToCalendarIfConnected(eventRecord, clientRecord) {
+    if (!isCalendarConnected()) return null
+    try {
+      if (eventRecord.calendarEventId) {
+        return await updateCalendarEvent(
+          eventRecord.calendarEventId,
+          eventRecord,
+          clientRecord,
+          reminders,
+        )
+      }
+      return await createCalendarEvent(eventRecord, clientRecord, reminders)
+    } catch (err) {
+      console.warn(err)
+      return null
+    }
+  }
+
+  function clientForCalendar(resolvedClientId) {
+    if (clientMode === 'new') {
+      return { name: client.name.trim(), phone: client.phone.trim(), email: client.email.trim() }
+    }
+    return db.clients.find((item) => item.id === resolvedClientId) ?? null
   }
 
   function validate() {
@@ -182,7 +215,12 @@ export function EventForm() {
 
       if (isEdit) {
         await update('events', eventId, payload)
-        toast.success('Event updated.')
+        const synced = await syncToCalendarIfConnected(
+          { ...existing, ...payload, id: eventId },
+          clientForCalendar(resolvedClientId),
+        )
+        if (synced) await update('events', eventId, synced)
+        toast.success(synced ? 'Event updated and Google Calendar synced.' : 'Event updated.')
         navigate(`/events/${eventId}`)
         return
       }
@@ -223,7 +261,13 @@ export function EventForm() {
         })
       }
 
-      toast.success('Event saved.')
+      const synced = await syncToCalendarIfConnected(
+        { ...payload, id: newEventId, calendarEventId: '', calendarLink: '' },
+        clientForCalendar(resolvedClientId),
+      )
+      if (synced) await update('events', newEventId, synced)
+
+      toast.success(synced ? 'Event saved and added to Google Calendar.' : 'Event saved.')
       navigate(`/events/${newEventId}`)
     } catch (err) {
       console.error(err)

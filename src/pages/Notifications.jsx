@@ -10,12 +10,13 @@ import {
 } from '../components/ui/Primitives'
 import { useData } from '../data/store'
 import { useDashboardData } from '../hooks/useEvents'
-import { isCalendarConfigured } from '../services/calendarService'
+import { useLocalSetting } from '../hooks/useLocalSetting'
 import { formatDate, formatMoney, formatStamp, relativeDay } from '../utils/format'
 
 export function Notifications() {
   const { db } = useData()
   const { upcoming, advancePending, footagePending, views } = useDashboardData()
+  const [calendarLinked] = useLocalSetting('calendarLinked', false)
 
   const log = useMemo(
     () =>
@@ -37,15 +38,17 @@ export function Notifications() {
       />
 
       <Banner kind="info">
-        <strong>How reminders work.</strong> Adding an event to Google Calendar schedules an
-        email and a phone notification 1 day and 2 hours before it starts. Google sends
-        them whether or not this website is open, and it costs nothing.
+        <strong>How reminders work (free).</strong> This website cannot send Gmail by itself
+        without a paid server. Google Calendar can: add an event there, and Google emails you
+        and notifies your phone 1 week and 1 day before the shoot, even if this website is
+        closed. No extra payment.
       </Banner>
 
-      {!isCalendarConfigured && (
+      {!calendarLinked && (
         <Banner kind="warn">
-          Google Calendar is not connected yet. Add your client ID in{' '}
-          <Link to="/settings">Settings</Link> to switch reminders on.
+          Calendar is not connected on this browser yet. Open{' '}
+          <Link to="/settings">Settings</Link>, tap Connect Google Calendar, then open an event
+          and tap Add to Google Calendar.
         </Banner>
       )}
 

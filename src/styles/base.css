@@ -1,22 +1,26 @@
 /* Design tokens, reset and form primitives. */
 
 :root {
-  --brand-50: #eef2ff;
-  --brand-100: #e0e7ff;
-  --brand-200: #c7d2fe;
-  --brand-300: #a5b4fc;
-  --brand-500: #6366f1;
-  --brand-600: #4f46e5;
-  --brand-700: #4338ca;
+  --brand-50: #f6f0f7;
+  --brand-100: #eee4f0;
+  --brand-200: #dccfe0;
+  --brand-300: #c4adc9;
+  --brand-500: #6b4d78;
+  --brand-600: #3a2a45;
+  --brand-700: #2b1e34;
 
-  --ink-900: #0f172a;
-  --ink-700: #334155;
-  --ink-500: #64748b;
-  --ink-400: #94a3b8;
-  --ink-300: #cbd5e1;
-  --ink-200: #e2e8f0;
-  --ink-100: #f1f5f9;
-  --ink-50: #f8fafc;
+  --accent: #e8b07a;
+  --accent-soft: #f3c49a;
+  --accent-deep: #d49655;
+
+  --ink-900: #1c1520;
+  --ink-700: #4a3f52;
+  --ink-500: #7a6e82;
+  --ink-400: #a396ab;
+  --ink-300: #cfc4d4;
+  --ink-200: #e6dfe9;
+  --ink-100: #f3eef5;
+  --ink-50: #faf7fb;
 
   --ok-bg: #dcfce7;
   --ok-fg: #15803d;
@@ -34,17 +38,17 @@
   --muted-fg: var(--ink-500);
 
   --surface: #ffffff;
-  --page-bg: #f4f5fb;
+  --page-bg: #efeaf3;
   --border: var(--ink-200);
 
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
+  --radius-sm: 12px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 28px;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.18);
+  --shadow-sm: 0 1px 2px rgba(58, 42, 69, 0.05);
+  --shadow: 0 10px 28px rgba(58, 42, 69, 0.08);
+  --shadow-lg: 0 22px 50px rgba(58, 42, 69, 0.16);
 
   --sidebar-w: 248px;
   --topbar-h: 60px;
@@ -66,7 +70,9 @@
 html,
 body,
 #root {
-  height: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 body {
@@ -75,7 +81,10 @@ body {
   font-size: 15px;
   line-height: 1.5;
   color: var(--ink-900);
-  background: var(--page-bg);
+  background:
+    radial-gradient(1200px 520px at 10% -10%, rgba(243, 196, 154, 0.28), transparent 55%),
+    radial-gradient(900px 480px at 110% 0%, rgba(58, 42, 69, 0.08), transparent 50%),
+    var(--page-bg);
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
 }

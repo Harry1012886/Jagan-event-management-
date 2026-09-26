@@ -12,7 +12,7 @@ const HERO_POINTS = [
 
 export function Login() {
   const { signInWithGoogle, signInWithEmail, error, clearError } = useAuth()
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('clixionphotography@gmail.com')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState('')
 
@@ -70,7 +70,8 @@ export function Login() {
           <div>
             <h1>Sign in</h1>
             <p className="text-sm text-muted" style={{ marginTop: 4 }}>
-              Use the Google account that owns this dashboard.
+              Sign in with <strong>clixionphotography@gmail.com</strong>. Works on iPhone
+              and Android.
             </p>
           </div>
 
@@ -104,7 +105,7 @@ export function Login() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="clixionphotography@gmail.com"
                   required
                 />
               )}
@@ -136,7 +137,7 @@ export function Login() {
           </form>
 
           <p className="text-xs text-muted" style={{ textAlign: 'center' }}>
-            Only accounts you authorise in Firebase can open this dashboard.
+            On iPhone: open this site in Safari, then Share → Add to Home Screen.
           </p>
         </div>
       </main>

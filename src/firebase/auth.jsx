@@ -1,12 +1,16 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import {
   GoogleAuthProvider,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut as fbSignOut,
 } from 'firebase/auth'
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { captureCalendarToken } from '../services/calendarService'
+import { isAppleTouchDevice } from '../utils/device'
 import { auth, db, isFirebaseConfigured } from './config'
 
 const AuthContext = createContext(null)
@@ -26,6 +30,14 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!isFirebaseConfigured) return undefined
+
+    getRedirectResult(auth)
+      .then((result) => {
+        captureCalendarToken(result)
+      })
+      .catch((err) => {
+        setError(friendlyAuthError(err))
+      })
 
     return onAuthStateChanged(
       auth,
@@ -60,7 +72,14 @@ export function AuthProvider({ children }) {
       setError('')
       try {
         const provider = new GoogleAuthProvider()
-        provider.setCustomParameters({ prompt: 'select_account' })
+        provider.setCustomParameters({
+          prompt: 'select_account',
+          login_hint: 'clixionphotography@gmail.com',
+        })
+        if (isAppleTouchDevice()) {
+          await signInWithRedirect(auth, provider)
+          return
+        }
         await signInWithPopup(auth, provider)
       } catch (err) {
         setError(friendlyAuthError(err))

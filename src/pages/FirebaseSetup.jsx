@@ -7,10 +7,7 @@ VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your-project-id
 VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=000000000000
-VITE_FIREBASE_APP_ID=1:000000000000:web:xxxxxxxxxxxx
-
-# Optional - only needed for Google Calendar reminders
-VITE_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com`
+VITE_FIREBASE_APP_ID=1:000000000000:web:xxxxxxxxxxxx`
 
 /**
  * Shown instead of the sign-in form when the Firebase keys are missing.

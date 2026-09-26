@@ -15,7 +15,9 @@
   justify-content: space-between;
   padding: 44px;
   color: #fff;
-  background: linear-gradient(150deg, var(--brand-700), #7c3aed 55%, #1e1b4b);
+  background:
+    radial-gradient(680px 320px at 80% 10%, rgba(243, 196, 154, 0.28), transparent 55%),
+    linear-gradient(160deg, var(--brand-600), var(--brand-700) 70%);
 }
 
 .login-hero h2 { font-size: 2rem; line-height: 1.2; }
@@ -52,6 +54,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 22px 20px 24px;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
 }
 
 .login-logo {
@@ -59,9 +65,9 @@
   place-items: center;
   width: 54px;
   height: 54px;
-  border-radius: 15px;
-  color: #fff;
-  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  border-radius: 18px;
+  color: var(--brand-700);
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
   box-shadow: var(--shadow);
 }
 
@@ -73,7 +79,7 @@
   width: 100%;
   min-height: 48px;
   border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   background: var(--surface);
   font-size: 0.95rem;
   font-weight: 600;
@@ -106,6 +112,18 @@
 }
 
 /* ----------------------------------------------------- calendar month */
+
+@media (max-width: 767px) {
+  .cal-page .page-header { display: none; }
+}
+
+.cal-board {
+  margin-bottom: 18px;
+}
+
+.cal-sheet {
+  margin-top: 0;
+}
 
 .month-toolbar {
   display: flex;
@@ -171,7 +189,8 @@
   color: var(--ink-700);
 }
 
-.month-cell.today .month-daynum { background: var(--brand-600); color: #fff; font-weight: 700; }
+.month-cell.today .month-daynum { background: var(--accent); color: var(--brand-700); font-weight: 700; }
+.month-cell.selected .month-daynum { background: var(--accent); color: #fff; font-weight: 700; }
 
 .month-pill {
   display: block;
@@ -200,8 +219,68 @@
 
 /* Phones: compact cells with dots, details listed under the grid. */
 @media (max-width: 767px) {
-  .month-cell { min-height: 54px; align-items: center; }
-  .month-daynum { align-self: center; }
+  .cal-board {
+    background: var(--brand-600);
+    color: #fff;
+    border-radius: 0 0 32px 32px;
+    margin: -16px -14px 0;
+    padding: 10px 12px 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .cal-board .month-toolbar { color: #fff; }
+  .cal-board .native-select {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: transparent;
+  }
+  .cal-board .picker-nav {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: transparent;
+  }
+  .cal-board .btn-secondary {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  .cal-sheet {
+    background: var(--surface);
+    border-radius: 28px 28px 0 0;
+    margin: -18px -14px 0;
+    padding: 18px 14px 8px;
+    position: relative;
+    box-shadow: 0 -8px 24px rgba(58, 42, 69, 0.08);
+  }
+
+  .month-grid {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    gap: 0;
+  }
+
+  .month-dow {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .month-cell {
+    background: transparent;
+    min-height: 46px;
+    align-items: center;
+  }
+  .month-cell:hover { background: rgba(255, 255, 255, 0.06); }
+  .month-cell.outside { background: transparent; }
+  .month-cell.outside .month-daynum { color: rgba(255, 255, 255, 0.28); }
+  .month-cell.selected { box-shadow: none; }
+  .month-daynum { align-self: center; color: rgba(255, 255, 255, 0.9); }
+  .month-cell.today .month-daynum,
+  .month-cell.selected .month-daynum {
+    background: var(--accent);
+    color: #fff;
+  }
   .month-pill { display: none; }
   .month-more { display: none; }
 
@@ -216,7 +295,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: var(--brand-500);
+    background: var(--accent);
   }
 }
 

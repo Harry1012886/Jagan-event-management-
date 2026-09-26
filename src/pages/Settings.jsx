@@ -20,7 +20,6 @@ import {
   REMINDER_PRESETS,
   connectCalendar,
   disconnectCalendar,
-  isCalendarConfigured,
 } from '../services/calendarService'
 import { exportEventsCsv, exportJson, exportPaymentsCsv } from '../utils/exportData'
 import { loadSampleData } from '../data/sampleData'
@@ -160,95 +159,73 @@ export function Settings() {
 
             <div className="row row-between" style={{ marginBottom: 12 }}>
               <span className="text-sm text-muted">Status</span>
-              {!isCalendarConfigured ? (
-                <Badge status="Not configured" tone="muted" />
-              ) : (
-                <Badge
-                  status={calendarLinked ? 'Connected' : 'Not connected'}
-                  tone={calendarLinked ? 'ok' : 'warn'}
-                />
-              )}
+              <Badge
+                status={calendarLinked ? 'Connected' : 'Not connected'}
+                tone={calendarLinked ? 'ok' : 'warn'}
+              />
             </div>
 
-            {!isCalendarConfigured ? (
-              <>
-                <p className="text-sm text-muted" style={{ marginBottom: 10 }}>
-                  To switch reminders on, create an OAuth client ID in Google Cloud Console
-                  and add it to your <code>.env</code> file:
-                </p>
-                <div className="steps">
-                  <div className="step">
-                    Create a Google Cloud project and enable the <strong>Google Calendar API</strong>.
-                  </div>
-                  <div className="step">
-                    Configure the OAuth consent screen and add your own Google account as a
-                    test user.
-                  </div>
-                  <div className="step">
-                    Create an <strong>OAuth client ID</strong> of type Web application, and add
-                    your site address to the authorised JavaScript origins.
-                  </div>
-                  <div className="step">
-                    Put it in <code>.env</code> as <code>VITE_GOOGLE_CLIENT_ID</code> and
-                    rebuild.
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <Field
-                  label="Remind me"
-                  hint="Applied to new calendar events. Each one sends an email and a phone notification."
-                >
-                  {(id) => (
-                    <Select
-                      id={id}
-                      value={String(reminders[0] ?? 1440)}
-                      onChange={(value) => setReminders([Number(value), reminders[1] ?? 120])}
-                      options={REMINDER_PRESETS.map((preset) => ({
-                        value: String(preset.value),
-                        label: preset.label,
-                      }))}
-                      searchable={false}
-                    />
-                  )}
-                </Field>
+            <p className="text-sm text-muted" style={{ marginBottom: 10 }}>
+              Free. Google Calendar emails you and notifies your phone. This website does not
+              send Gmail itself — that would need a paid server.
+            </p>
+            <p className="text-sm text-muted" style={{ marginBottom: 12 }}>
+              Tap Connect, then pick <strong>clixionphotography@gmail.com</strong> so reminders
+              go to that inbox and phone. After that, open an event and tap
+              <strong> Add to Google Calendar</strong>.
+            </p>
 
-                <div style={{ height: 12 }} />
+            <Field
+              label="Remind me"
+              hint="Google sends these before the shoot starts — not at the moment you save the booking."
+            >
+              {(id) => (
+                <Select
+                  id={id}
+                  value={String(reminders[0] ?? 10080)}
+                  onChange={(value) => setReminders([Number(value), reminders[1] ?? 1440])}
+                  options={REMINDER_PRESETS.map((preset) => ({
+                    value: String(preset.value),
+                    label: preset.label,
+                  }))}
+                  searchable={false}
+                />
+              )}
+            </Field>
 
-                <Field label="And again">
-                  {(id) => (
-                    <Select
-                      id={id}
-                      value={String(reminders[1] ?? 120)}
-                      onChange={(value) => setReminders([reminders[0] ?? 1440, Number(value)])}
-                      options={REMINDER_PRESETS.map((preset) => ({
-                        value: String(preset.value),
-                        label: preset.label,
-                      }))}
-                      searchable={false}
-                    />
-                  )}
-                </Field>
+            <div style={{ height: 12 }} />
 
-                <div className="row gap-8" style={{ marginTop: 14 }}>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={connect}
-                    disabled={calendarBusy}
-                  >
-                    {calendarBusy ? <Spinner /> : <Icon name="calendarCheck" size={16} />}
-                    {calendarLinked ? 'Reconnect' : 'Connect Google Calendar'}
-                  </button>
-                  {calendarLinked && (
-                    <button type="button" className="btn btn-secondary" onClick={disconnect}>
-                      Disconnect
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
+            <Field label="And again">
+              {(id) => (
+                <Select
+                  id={id}
+                  value={String(reminders[1] ?? 1440)}
+                  onChange={(value) => setReminders([reminders[0] ?? 10080, Number(value)])}
+                  options={REMINDER_PRESETS.map((preset) => ({
+                    value: String(preset.value),
+                    label: preset.label,
+                  }))}
+                  searchable={false}
+                />
+              )}
+            </Field>
+
+            <div className="row gap-8" style={{ marginTop: 14 }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={connect}
+                disabled={calendarBusy}
+              >
+                {calendarBusy ? <Spinner /> : <Icon name="calendarCheck" size={16} />}
+                {calendarLinked ? 'Reconnect' : 'Connect Google Calendar'}
+              </button>
+              {calendarLinked && (
+                <button type="button" className="btn btn-secondary" onClick={disconnect}>
+                  Disconnect
+                </button>
+              )}
+            </div>
           </SectionCard>
 
           <SectionCard title="Backup & export" icon="download">
